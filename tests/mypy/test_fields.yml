@@ -124,3 +124,23 @@
     reveal_type(Example.a)
   out: |
     main:8: note: Revealed type is "builtins.str"
+- case: test_positional_arguments_in_field
+  main: |
+    import strawberry
+
+    def resolver() -> str:
+      return 'Hello, World!'
+
+    @strawberry.type
+    class Example:
+      passed: str = strawberry.field(resolver=resolver)
+      failed_1: str = strawberry.field(resolver)
+      failed_2: str = strawberry.field(resolver, "ExampleName", description="Example")
+  out: |
+    main:9: error: `field()` only takes keyword arguments  [misc]
+    main:10: error: `field()` only takes keyword arguments  [misc]
+    main:10: error: No overload variant of "field" matches argument types "Callable[[], str]", "str", "str"  [call-overload]
+    main:10: note: Possible overload variants:
+    main:10: note:     def [T] field(*, resolver: Callable[[], T], name: Optional[str] = ..., is_subscription: bool = ..., description: Optional[str] = ..., init: Literal[False] = ..., permission_classes: Optional[List[Type[BasePermission]]] = ..., deprecation_reason: Optional[str] = ..., default: Any = ..., default_factory: Union[Callable[..., Any], object] = ..., directives: Optional[Sequence[object]] = ...) -> T
+    main:10: note:     def field(*, name: Optional[str] = ..., is_subscription: bool = ..., description: Optional[str] = ..., init: Literal[True] = ..., permission_classes: Optional[List[Type[BasePermission]]] = ..., deprecation_reason: Optional[str] = ..., default: Any = ..., default_factory: Union[Callable[..., Any], object] = ..., directives: Optional[Sequence[object]] = ...) -> Any
+    main:10: note:     def field(resolver: Union[StrawberryResolver[Any], Callable[..., Any], staticmethod[Any], classmethod[Any]], *, name: Optional[str] = ..., is_subscription: bool = ..., description: Optional[str] = ..., permission_classes: Optional[List[Type[BasePermission]]] = ..., deprecation_reason: Optional[str] = ..., default: Any = ..., default_factory: Union[Callable[..., Any], object] = ..., directives: Optional[Sequence[object]] = ...) -> StrawberryField
